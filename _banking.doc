@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.7.0 <0.9.0;
+
+contract BankingMachine{
+    address public owner;
+    mapping (address => uint) public accountbalance;
+
+    constructor(){
+        owner = msg.sender;
+        accountbalance[address(this)] = 100;
+
+    }
+
+    function getAccountBalance() public view returns (uint){
+        return accountbalance[address(this)];
+
+    }
+
+    function depositfunds(uint amount) public {
+        require(msg.sender == owner,"only the owner can deposit funds");
+        accountbalance[address(this)] += amount;
+    }
+
+    function transferfunds(uint amount) public payable {
+        require(msg.value >= amount * 2 ether);
+        require(accountbalance[address(this)] >= amount);
+        accountbalance[address(this)] -= amount;
+        accountbalance[msg.sender] -= amount;
+
+
+    }
+
+    function recievefunds(uint amount) public {
+        accountbalance[address(this)] += amount;
+        accountbalance[msg.sender] += amount;
+    }
+
+    function sendfunds(uint amount) public payable {
+        accountbalance[address(this)] -= amount;
+        accountbalance[msg.sender] -= amount;
+    }
+
+
+}
